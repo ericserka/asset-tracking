@@ -1,18 +1,15 @@
 defmodule AssetTracking do
   @moduledoc """
-  Documentation for `AssetTracking`.
+  This project aims to track assets and calculate capital gains or losses
   """
 
-  @doc """
-  Hello world.
+  def pipeline do
+    quote do
+      import AssetTracking.Utils.Pipeline
+    end
+  end
 
-  ## Examples
-
-      iex> AssetTracking.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  defmacro __using__(which) when is_atom(which) do
+    apply(__MODULE__, which, [])
   end
 end
