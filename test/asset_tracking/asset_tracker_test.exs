@@ -459,7 +459,7 @@ defmodule AssetTracking.AssetTrackerTest do
         "APPL",
         Decimal.new(300)
       )
-      |> Kernel.==(Decimal.new(0))
+      |> Decimal.eq?(Decimal.new(0))
       |> assert()
     end
 
@@ -481,7 +481,7 @@ defmodule AssetTracking.AssetTrackerTest do
         future_purchase.unit_price
       )
       |> AssetTracker.unrealized_gain_or_loss("APPL", Decimal.new(300))
-      |> Kernel.==(Decimal.new(1100))
+      |> Decimal.eq?(Decimal.new(1100))
       |> assert()
     end
 
@@ -503,7 +503,7 @@ defmodule AssetTracking.AssetTrackerTest do
         future_purchase.unit_price
       )
       |> AssetTracker.unrealized_gain_or_loss("APPL", Decimal.new(50))
-      |> Kernel.==(Decimal.new(-900))
+      |> Decimal.eq?(Decimal.new(-900))
       |> assert()
     end
 
@@ -533,7 +533,7 @@ defmodule AssetTracking.AssetTrackerTest do
       )
       |> elem(0)
       |> AssetTracker.unrealized_gain_or_loss("APPL", Decimal.new(300))
-      |> Kernel.==(Decimal.new(400))
+      |> Decimal.eq?(Decimal.new(400))
       |> assert()
     end
 
@@ -563,7 +563,7 @@ defmodule AssetTracking.AssetTrackerTest do
       )
       |> elem(0)
       |> AssetTracker.unrealized_gain_or_loss("APPL", Decimal.new(50))
-      |> Kernel.==(Decimal.new(-600))
+      |> Decimal.eq?(Decimal.new(-600))
       |> assert()
     end
   end

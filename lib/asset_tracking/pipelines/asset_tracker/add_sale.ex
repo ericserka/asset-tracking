@@ -47,10 +47,12 @@ defmodule AssetTracking.Pipelines.AssetTracker.AddSale do
          validated_input: %{quantity: quantity},
          asset_data: %Asset{purchases: purchases}
        }) do
-    purchases
-    |> Prioqueue.to_list()
-    |> reduce(Decimal.new(0), &Decimal.add(&1.quantity, &2))
-    |> Kernel.>=(quantity)
+    quantity_available =
+      purchases
+      |> Prioqueue.to_list()
+      |> reduce(Decimal.new(0), &Decimal.add(&1.quantity, &2))
+
+    Decimal.eq?(quantity_available, quantity) or Decimal.gt?(quantity_available, quantity)
   end
 
   defp calculate_total_sale_price(%{available_quantity?: false}),
@@ -97,7 +99,7 @@ defmodule AssetTracking.Pipelines.AssetTracker.AddSale do
       asset_tracker,
       asset_symbol,
       total_sale_price,
-      Decimal.to_integer(quantity),
+      Decimal.to_float(quantity),
       Decimal.new(0)
     )
   end
@@ -110,7 +112,7 @@ defmodule AssetTracking.Pipelines.AssetTracker.AddSale do
          %AssetTracker{} = asset_tracker,
          _,
          total_sale_price,
-         0,
+         0.0,
          total_purchase_price
        ),
        do: {asset_tracker, Decimal.sub(total_sale_price, total_purchase_price)}
@@ -126,6 +128,8 @@ defmodule AssetTracking.Pipelines.AssetTracker.AddSale do
 
     {:ok, {oldest_purchase, purchases_rest}} = Prioqueue.extract_min(purchases)
 
+    quantity_left = Decimal.from_float(quantity_left)
+
     max_quantity_to_sell = Decimal.min(oldest_purchase.quantity, quantity_left)
 
     new_purchase = %Purchase{
@@ -134,7 +138,7 @@ defmodule AssetTracking.Pipelines.AssetTracker.AddSale do
         reinserted?: true
     }
 
-    new_quantity_left = quantity_left |> Decimal.sub(max_quantity_to_sell) |> Decimal.to_integer()
+    new_quantity_left = quantity_left |> Decimal.sub(max_quantity_to_sell) |> Decimal.to_float()
 
     new_purchases =
       new_purchase.quantity
