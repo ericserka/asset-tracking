@@ -17,15 +17,22 @@ defmodule AssetTracking.AssetTracker do
       %AssetTracking.AssetTracker{
         inventory: %{
           "APPL" => %AssetTracking.Asset{
-            purchases: #Prioqueue.Implementations.SkewHeap<[
-              %AssetTracking.Purchase{
-                settle_date: ~D[2023-10-19],
-                quantity: Decimal.new("5"),
-                unit_price: Decimal.new("200"),
-                reinserted?: false
-              }
-            ]>,
-            sales: #Prioqueue.Implementations.SkewHeap<[]>
+            purchases: %PriorityQueue{
+              mapper: #Function<1.122398763/1 in AssetTracking.Asset.new/0>,
+              sorter: Date,
+              queue: [
+                %AssetTracking.Purchase{
+                  settle_date: ~D[2023-10-19],
+                  quantity: Decimal.new("5"),
+                  unit_price: Decimal.new("200")
+                }
+              ]
+            },
+            sales: %PriorityQueue{
+              mapper: #Function<2.122398763/1 in AssetTracking.Asset.new/0>,
+              sorter: Date,
+              queue: []
+            }
           }
         }
       }
@@ -33,21 +40,27 @@ defmodule AssetTracking.AssetTracker do
       %AssetTracking.AssetTracker{
         inventory: %{
           "APPL" => %AssetTracking.Asset{
-            purchases: #Prioqueue.Implementations.SkewHeap<[
-              %AssetTracking.Purchase{
-                settle_date: ~D[2023-10-18],
-                quantity: Decimal.new("3"),
-                unit_price: Decimal.new("100"),
-                reinserted?: false
-              },
-              %AssetTracking.Purchase{
-                settle_date: ~D[2023-10-19],
-                quantity: Decimal.new("5"),
-                unit_price: Decimal.new("200"),
-                reinserted?: false
-              }
-            ]>,
-            sales: #Prioqueue.Implementations.SkewHeap<[]>
+            purchases: %PriorityQueue{
+              mapper: #Function<1.122398763/1 in AssetTracking.Asset.new/0>,
+              sorter: Date,
+              queue: [
+                %AssetTracking.Purchase{
+                  settle_date: ~D[2023-10-18],
+                  quantity: Decimal.new("3"),
+                  unit_price: Decimal.new("100")
+                },
+                %AssetTracking.Purchase{
+                  settle_date: ~D[2023-10-19],
+                  quantity: Decimal.new("5"),
+                  unit_price: Decimal.new("200")
+                }
+              ]
+            },
+            sales: %PriorityQueue{
+              mapper: #Function<2.122398763/1 in AssetTracking.Asset.new/0>,
+              sorter: Date,
+              queue: []
+            }
           }
         }
       }
@@ -55,32 +68,38 @@ defmodule AssetTracking.AssetTracker do
       {%AssetTracking.AssetTracker{
         inventory: %{
           "APPL" => %AssetTracking.Asset{
-            purchases: #Prioqueue.Implementations.SkewHeap<[
-              %AssetTracking.Purchase{
-                settle_date: ~D[2023-10-18],
-                quantity: Decimal.new("2"),
-                unit_price: Decimal.new("100"),
-                reinserted?: true
-              },
-              %AssetTracking.Purchase{
-                settle_date: ~D[2023-10-19],
-                quantity: Decimal.new("5"),
-                unit_price: Decimal.new("200"),
-                reinserted?: false
-              }
-            ]>,
-            sales: #Prioqueue.Implementations.SkewHeap<[
-              %AssetTracking.Sale{
-                sell_date: ~D[2023-10-20],
-                quantity: Decimal.new("1"),
-                unit_price: Decimal.new("10")
-              }
-            ]>
+            purchases: %PriorityQueue{
+              mapper: #Function<1.122398763/1 in AssetTracking.Asset.new/0>,
+              sorter: Date,
+              queue: [
+                %AssetTracking.Purchase{
+                  settle_date: ~D[2023-10-18],
+                  quantity: Decimal.new("2.0"),
+                  unit_price: Decimal.new("100")
+                },
+                %AssetTracking.Purchase{
+                  settle_date: ~D[2023-10-19],
+                  quantity: Decimal.new("5"),
+                  unit_price: Decimal.new("200")
+                }
+              ]
+            },
+            sales: %PriorityQueue{
+              mapper: #Function<2.122398763/1 in AssetTracking.Asset.new/0>,
+              sorter: Date,
+              queue: [
+                %AssetTracking.Sale{
+                  sell_date: ~D[2023-10-20],
+                  quantity: Decimal.new("1"),
+                  unit_price: Decimal.new("10")
+                }
+              ]
+            }
           }
         }
-      }, Decimal.new("-90")}
+      }, Decimal.new("-90.0")}
       iex> AssetTracker.unrealized_gain_or_loss(asset_tracker, "APPL", Decimal.new(50))
-      Decimal.new("-850")
+      Decimal.new("-850.0")
     ```
   """
 

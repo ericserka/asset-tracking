@@ -10,7 +10,6 @@ As external dependencies, the following were used:
 2. [Tarams](https://hexdocs.pm/tarams/readme.html) for input validation
 3. [ExDoc](https://hexdocs.pm/ex_doc/readme.html) for documentation generation
 4. [Decimal](https://hexdocs.pm/decimal/Decimal.html) for handling quantities and prices
-5. [Prioqueue](https://hexdocs.pm/prioqueue/api-reference.html) to guarantee the fifo procedure based on dates
 
 ## Usage
 

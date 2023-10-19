@@ -20,24 +20,21 @@ defmodule AssetTracking.Pipelines.AssetTracker.CalculateUnrealizedGainOrLoss do
 
     Duct.Multi.new()
     |> Duct.Multi.run(:validated_input, fn _ -> validate_input(input, input_schema) end)
-    |> Duct.Multi.run(:asset_purchase_list, &get_asset_purchase_list/1)
     |> Duct.Multi.run(:unrealized_gain_or_loss, &sum_unrealized_gain_or_loss/1)
     |> Duct.run()
     |> output()
   end
 
-  defp get_asset_purchase_list(%{
-         validated_input: %{asset_tracker: asset_tracker, asset_symbol: asset_symbol}
+  defp sum_unrealized_gain_or_loss(%{
+         validated_input: %{
+           asset_tracker: asset_tracker,
+           asset_symbol: asset_symbol,
+           market_price: market_price
+         }
        }) do
     %Asset{purchases: purchases} = Map.get(asset_tracker.inventory, asset_symbol, Asset.new())
-    Prioqueue.to_list(purchases)
+    PriorityQueue.fold(purchases, Decimal.new(0), &sum_accumulator(&1, &2, market_price))
   end
-
-  defp sum_unrealized_gain_or_loss(%{
-         validated_input: %{market_price: market_price},
-         asset_purchase_list: asset_purchase_list
-       }),
-       do: reduce(asset_purchase_list, Decimal.new(0), &sum_accumulator(&1, &2, market_price))
 
   defp output({:error, _, reason, _input}), do: {:error, reason}
 

@@ -18,16 +18,4 @@ defmodule AssetTracking.Utils.Pipeline do
     |> Decimal.positive?()
     |> if(do: :ok, else: {:error, "must be positive"})
   end
-
-  @doc """
-    Custom implementation of reducing algorithm using recursion and tail-call optimization instead of just using `Enum.reduce/3`
-  """
-  @spec reduce(list(any()), any(), function()) :: any()
-
-  def reduce([], acc, _fun), do: acc
-
-  def reduce([head | tail], acc, fun) do
-    new_acc = fun.(head, acc)
-    reduce(tail, new_acc, fun)
-  end
 end

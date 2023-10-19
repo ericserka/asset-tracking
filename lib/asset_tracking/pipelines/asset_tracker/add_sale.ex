@@ -48,9 +48,7 @@ defmodule AssetTracking.Pipelines.AssetTracker.AddSale do
          asset_data: %Asset{purchases: purchases}
        }) do
     quantity_available =
-      purchases
-      |> Prioqueue.to_list()
-      |> reduce(Decimal.new(0), &Decimal.add(&1.quantity, &2))
+      PriorityQueue.fold(purchases, Decimal.new(0), &Decimal.add(&1.quantity, &2))
 
     Decimal.eq?(quantity_available, quantity) or Decimal.gt?(quantity_available, quantity)
   end
@@ -70,7 +68,7 @@ defmodule AssetTracking.Pipelines.AssetTracker.AddSale do
     %Asset{
       asset_data
       | sales:
-          Prioqueue.insert(sales, %Sale{
+          PriorityQueue.push_in(sales, %Sale{
             sell_date: sell_date,
             quantity: quantity,
             unit_price: unit_price
@@ -126,7 +124,7 @@ defmodule AssetTracking.Pipelines.AssetTracker.AddSale do
        ) do
     %Asset{purchases: purchases} = asset_data = Map.get(inventory, asset_symbol, Asset.new())
 
-    {:ok, {oldest_purchase, purchases_rest}} = Prioqueue.extract_min(purchases)
+    {:ok, oldest_purchase} = PriorityQueue.peek(purchases)
 
     quantity_left = Decimal.from_float(quantity_left)
 
@@ -134,8 +132,7 @@ defmodule AssetTracking.Pipelines.AssetTracker.AddSale do
 
     new_purchase = %Purchase{
       oldest_purchase
-      | quantity: Decimal.sub(oldest_purchase.quantity, max_quantity_to_sell),
-        reinserted?: true
+      | quantity: Decimal.sub(oldest_purchase.quantity, max_quantity_to_sell)
     }
 
     new_quantity_left = quantity_left |> Decimal.sub(max_quantity_to_sell) |> Decimal.to_float()
@@ -143,7 +140,12 @@ defmodule AssetTracking.Pipelines.AssetTracker.AddSale do
     new_purchases =
       new_purchase.quantity
       |> Decimal.eq?(0)
-      |> if(do: purchases_rest, else: Prioqueue.insert(purchases_rest, new_purchase))
+      |> if do
+        {:ok, {_, purchases_rest}} = PriorityQueue.out(purchases)
+        purchases_rest
+      else
+        PriorityQueue.replace_head(purchases, new_purchase)
+      end
 
     new_total_purchase_price =
       Decimal.add(

@@ -40,16 +40,4 @@ defmodule AssetTracking.Utils.PipelineTest do
       |> assert()
     end
   end
-
-  describe "reduce/3" do
-    test "should return acc if list is empty" do
-      acc = 0
-      assert PipelineUtils.reduce([], acc, &(&1 + &2)) == acc
-    end
-
-    test "should reduce according to fun" do
-      assert PipelineUtils.reduce([1, 2, 3], 0, &(&1 + &2)) == 1 + 2 + 3
-      assert PipelineUtils.reduce([1, 2, 3], 1, &(&1 * &2)) == 1 * 2 * 3
-    end
-  end
 end

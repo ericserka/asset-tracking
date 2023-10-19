@@ -39,7 +39,7 @@ defmodule AssetTracking.Pipelines.AssetTracker.AddPurchase do
          asset_data: %Asset{purchases: purchases},
          validated_input: %{unit_price: unit_price, quantity: quantity, settle_date: settle_date}
        }) do
-    Prioqueue.insert(purchases, %Purchase{
+    PriorityQueue.push_in(purchases, %Purchase{
       unit_price: unit_price,
       quantity: quantity,
       settle_date: settle_date

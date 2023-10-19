@@ -55,7 +55,7 @@ defmodule AssetTracking.AssetTrackerTest do
                  some_purchase.unit_price
                )
 
-      assert Prioqueue.size(purchases) == 1
+      assert PriorityQueue.len(purchases) == 1
     end
 
     test "should add new purchase to asset purchases queue when current asset purchases queue is not empty",
@@ -78,10 +78,10 @@ defmodule AssetTracking.AssetTrackerTest do
                  future_purchase.unit_price
                )
 
-      assert Prioqueue.size(purchases) == 2
+      assert PriorityQueue.len(purchases) == 2
 
       # The oldest purchase should be the head of the queue
-      assert {:ok, head} = Prioqueue.peek_min(purchases)
+      assert {:ok, head} = PriorityQueue.peek(purchases)
       assert Decimal.eq?(head.quantity, some_purchase.quantity)
       assert Decimal.eq?(head.unit_price, some_purchase.unit_price)
       assert Date.compare(head.settle_date, some_purchase.settle_date) == :eq
@@ -107,9 +107,9 @@ defmodule AssetTracking.AssetTrackerTest do
                  some_purchase.unit_price
                )
 
-      assert Prioqueue.size(purchases) == 2
+      assert PriorityQueue.len(purchases) == 2
 
-      assert {:ok, head} = Prioqueue.peek_min(purchases)
+      assert {:ok, head} = PriorityQueue.peek(purchases)
       assert Decimal.eq?(head.quantity, another_quantity)
       assert Decimal.eq?(head.unit_price, another_price)
     end
@@ -135,8 +135,8 @@ defmodule AssetTracking.AssetTrackerTest do
                  some_purchase.unit_price
                )
 
-      assert Prioqueue.size(appl_purchases) == 1
-      assert Prioqueue.size(samsun_purchases) == 1
+      assert PriorityQueue.len(appl_purchases) == 1
+      assert PriorityQueue.len(samsun_purchases) == 1
     end
   end
 
@@ -218,8 +218,8 @@ defmodule AssetTracking.AssetTrackerTest do
                )
 
       assert Decimal.eq?(realized_gain_or_loss, Decimal.new(-90))
-      assert Prioqueue.size(purchases) == 1
-      assert Prioqueue.size(sales) == 1
+      assert PriorityQueue.len(purchases) == 1
+      assert PriorityQueue.len(sales) == 1
     end
 
     test "update first the older purchase if more than 1 purchase", %{
@@ -254,10 +254,10 @@ defmodule AssetTracking.AssetTrackerTest do
                )
 
       assert Decimal.eq?(realized_gain_or_loss, Decimal.new(-90))
-      assert Prioqueue.size(purchases) == 2
-      assert Prioqueue.size(sales) == 1
+      assert PriorityQueue.len(purchases) == 2
+      assert PriorityQueue.len(sales) == 1
 
-      assert {:ok, oldest_purchase} = Prioqueue.peek_min(purchases)
+      assert {:ok, oldest_purchase} = PriorityQueue.peek(purchases)
 
       assert some_purchase.quantity
              |> Decimal.sub(single_unit_sale.quantity)
@@ -289,8 +289,8 @@ defmodule AssetTracking.AssetTrackerTest do
                )
 
       assert Decimal.eq?(realized_gain_or_loss, Decimal.new(600))
-      assert Prioqueue.empty?(purchases)
-      assert Prioqueue.size(sales) == 1
+      assert PriorityQueue.is_empty?(purchases)
+      assert PriorityQueue.len(sales) == 1
     end
 
     test "purchases queue should be reduced in size after a purchase has had all its units sold",
@@ -326,8 +326,8 @@ defmodule AssetTracking.AssetTrackerTest do
                )
 
       assert Decimal.eq?(realized_gain_or_loss, Decimal.new(600))
-      assert Prioqueue.size(purchases) == 1
-      assert Prioqueue.size(sales) == 1
+      assert PriorityQueue.len(purchases) == 1
+      assert PriorityQueue.len(sales) == 1
     end
 
     test "oldest sale should be inserted at the head of the sales queue", %{
@@ -356,8 +356,8 @@ defmodule AssetTracking.AssetTrackerTest do
                )
 
       assert Decimal.eq?(realized_gain_or_loss, Decimal.new(-160))
-      assert Prioqueue.size(purchases) == 1
-      assert Prioqueue.size(sales) == 1
+      assert PriorityQueue.len(purchases) == 1
+      assert PriorityQueue.len(sales) == 1
 
       assert {%AssetTracker{
                 inventory: %{
@@ -374,10 +374,10 @@ defmodule AssetTracking.AssetTrackerTest do
                )
 
       assert Decimal.eq?(realized_gain_or_loss, Decimal.new(-90))
-      assert Prioqueue.empty?(purchases)
-      assert Prioqueue.size(sales) == 2
+      assert PriorityQueue.is_empty?(purchases)
+      assert PriorityQueue.len(sales) == 2
 
-      assert {:ok, oldest_sale} = Prioqueue.peek_min(sales)
+      assert {:ok, oldest_sale} = PriorityQueue.peek(sales)
       assert oldest_sale == single_unit_sale
     end
 
@@ -414,22 +414,22 @@ defmodule AssetTracking.AssetTrackerTest do
 
       assert Decimal.eq?(realized_gain_or_loss, Decimal.new(-90))
 
-      assert Prioqueue.size(appl_purchases) == 1
-      assert Prioqueue.empty?(appl_sales)
+      assert PriorityQueue.len(appl_purchases) == 1
+      assert PriorityQueue.is_empty?(appl_sales)
 
-      assert Prioqueue.size(samsun_purchases) == 1
-      assert Prioqueue.size(samsun_sales) == 1
+      assert PriorityQueue.len(samsun_purchases) == 1
+      assert PriorityQueue.len(samsun_sales) == 1
 
-      assert {:ok, samsun_sale} = Prioqueue.peek_min(samsun_sales)
+      assert {:ok, samsun_sale} = PriorityQueue.peek(samsun_sales)
       assert samsun_sale == single_unit_sale
 
-      assert {:ok, samsun_purchase} = Prioqueue.peek_min(samsun_purchases)
+      assert {:ok, samsun_purchase} = PriorityQueue.peek(samsun_purchases)
 
       assert some_purchase.quantity
              |> Decimal.sub(single_unit_sale.quantity)
              |> Decimal.eq?(samsun_purchase.quantity)
 
-      assert {:ok, appl_purchase} = Prioqueue.peek_min(appl_purchases)
+      assert {:ok, appl_purchase} = PriorityQueue.peek(appl_purchases)
       assert Decimal.eq?(some_purchase.quantity, appl_purchase.quantity)
     end
   end

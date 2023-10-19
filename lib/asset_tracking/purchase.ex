@@ -3,5 +3,5 @@ defmodule AssetTracking.Purchase do
     Represents a purchase of an asset
   """
 
-  defstruct [:settle_date, :quantity, :unit_price, reinserted?: false]
+  defstruct ~w(settle_date quantity unit_price)a
 end
