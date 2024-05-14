@@ -110,7 +110,7 @@ defmodule AssetTracking.Pipelines.AssetTracker.AddSale do
          %AssetTracker{} = asset_tracker,
          _,
          total_sale_price,
-         0.0,
+         +0.0,
          total_purchase_price
        ),
        do: {asset_tracker, Decimal.sub(total_sale_price, total_purchase_price)}
